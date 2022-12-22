@@ -35,6 +35,7 @@ namespace EmguCv
             this.btnGray = new System.Windows.Forms.Button();
             this.btnCam = new System.Windows.Forms.Button();
             this.btnOpen2 = new System.Windows.Forms.Button();
+            this.btnOpen3 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.picOrign)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picResize)).BeginInit();
             this.SuspendLayout();
@@ -95,11 +96,22 @@ namespace EmguCv
             this.btnOpen2.UseVisualStyleBackColor = true;
             this.btnOpen2.Click += new System.EventHandler(this.btnOpen2_Click);
             // 
+            // btnOpen3
+            // 
+            this.btnOpen3.Location = new System.Drawing.Point(142, 397);
+            this.btnOpen3.Name = "btnOpen3";
+            this.btnOpen3.Size = new System.Drawing.Size(75, 23);
+            this.btnOpen3.TabIndex = 6;
+            this.btnOpen3.Text = "Open3";
+            this.btnOpen3.UseVisualStyleBackColor = true;
+            this.btnOpen3.Click += new System.EventHandler(this.btnOpen3_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.btnOpen3);
             this.Controls.Add(this.btnOpen2);
             this.Controls.Add(this.btnCam);
             this.Controls.Add(this.btnGray);
@@ -122,6 +134,7 @@ namespace EmguCv
         private System.Windows.Forms.Button btnGray;
         private System.Windows.Forms.Button btnCam;
         private System.Windows.Forms.Button btnOpen2;
+        private System.Windows.Forms.Button btnOpen3;
     }
 }
 
