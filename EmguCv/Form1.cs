@@ -87,15 +87,15 @@ namespace EmguCv
             return mask;
         }
 
-        static IInputArrayOfArrays getContours(Mat binary_image)
+        static VectorOfVectorOfPoint getContours(Mat binary_image)
         {
             IOutputArrayOfArrays contours = new VectorOfVectorOfPoint();
             IOutputArrayOfArrays hierarchy = null;
             CvInvoke.FindContours(binary_image, contours, hierarchy, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxSimple);
 
-            return (IInputArrayOfArrays)contours;
+            return (VectorOfVectorOfPoint)contours;
         }
-        static PointF get_contour_center(IInputArray countour)
+        static PointF get_contour_center(VectorOfPoint countour)
         {
             Moments M = CvInvoke.Moments(countour, true);
             float cx = -1;
@@ -111,23 +111,38 @@ namespace EmguCv
 
             return cx_cy;
         }
-        /*
-        static void draw_ball_contour(Mat binary_image, Mat rgb_image, IInputArrayOfArrays contours)
+        
+        static void draw_ball_contour(Mat binary_image, Mat read_rgb_image, VectorOfVectorOfPoint contours)
         {
-            Mat black_image = new Mat(binary_image.Rows, binary_image.Cols, Emgu.CV.CvEnum.DepthType.Cv8U,1);
-            for (int c = 0; c < contours; c++)
-            {
-                float area = CvInvoke.ContourArea(contours[c]);
-                float perimeter = CvInvoke.ArcLength(contours[c], true);
+            System.Diagnostics.Debug.WriteLine("draw_ball_contour: " + contours.Size.ToString());
 
-                if (area > 300) {
+            Mat black_image = new Mat(binary_image.Rows, binary_image.Cols, Emgu.CV.CvEnum.DepthType.Cv8U,1);
+            for (int c = 0; c < contours.Size; c++)
+            {
+                double area = CvInvoke.ContourArea(contours[c]);
+                double perimeter = CvInvoke.ArcLength(contours[c], true);
+
+                System.Diagnostics.Debug.WriteLine("area: " + area.ToString() + " perimeter: " + perimeter.ToString());
+
+                if (area > 100) {
+                    PointF center = new PointF();
+                    float radius = new float();
+                    
+                    CvInvoke.MinEnclosingCircle(contours[c]); // Radios Center ??
+                    radius = CvInvoke.MinEnclosingCircle(contours[c]).Radius;
+                    center = CvInvoke.MinEnclosingCircle(contours[c]).Center;
+
+                    VectorOfPoint ctn = contours[c];
                     PointF cxcy = get_contour_center(ctn);
+                    CvInvoke.Circle(black_image, Point.Round(cxcy), (int)(radius), new MCvScalar(0, 0, 255), 1, Emgu.CV.CvEnum.LineType.EightConnected);
+                    CvInvoke.DrawContours(black_image, contours, c, new MCvScalar(150, 250, 150), 1);
 
                 }
             }
-            //Vector vector1 = new Vector() <vector<Point>> contours = CvInvoke.ContourArea(binary_image_mask);
+            CvInvoke.Imshow("Black contours", black_image);
+
         }
-        */
+
         //Main
         private void btnOpen3_Click(object sender, EventArgs e)
         {
@@ -138,8 +153,8 @@ namespace EmguCv
             int[] yellowUpper = { 60, 255, 255 };
             Mat rgb_image = read_rgb_image(image_name, true);
             Mat binary_image_mask = filter_color(rgb_image, yellowLower, yellowUpper);
-            IInputArray contours = getContours(binary_image_mask);
-            //draw_ball_contour(binary_image_mask, read_rgb_image, contours);
+            VectorOfVectorOfPoint contours = getContours(binary_image_mask);
+            draw_ball_contour(binary_image_mask, rgb_image, contours);
 
             CvInvoke.WaitKey(0);
             CvInvoke.DestroyAllWindows();
