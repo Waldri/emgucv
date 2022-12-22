@@ -11,6 +11,7 @@ using Emgu.CV;
 using Emgu.CV.UI;
 using Emgu.CV.Structure;
 using System.Numerics;
+using Emgu.CV.Util;
 
 namespace EmguCv
 {
@@ -61,24 +62,6 @@ namespace EmguCv
         }
 
         //detect img
-        private void btnOpen3_Click(object sender, EventArgs e)
-        {
-            Mat img;
-            img = CvInvoke.Imread("images/tennisball02.jpg");
-            string image_name = "images/tennisball02.jpg";
-            int[] yellowLower = { 30, 150, 100 };
-            int[] yellowUpper = { 60, 255, 255 };
-            Mat rgb_image = read_rgb_image(image_name, true);
-            Mat binary_image_mask = filter_color(rgb_image, yellowLower, yellowUpper);
-            IInputArray contours = getContours(binary_image_mask);
-            draw_ball_contour(binary_image_mask, read_rgb_image);
-
-            //CvInvoke.NamedWindow("Image", Emgu.CV.CvEnum.WindowFlags.Normal);
-            //CvInvoke.Imshow("Image", img);
-            //CvInvoke.Imwrite("images/flower.jpg", img);
-            CvInvoke.WaitKey(0);
-        }
-
         static Mat read_rgb_image(string image_name, bool show)
         {
             Mat image;
@@ -104,14 +87,15 @@ namespace EmguCv
             return mask;
         }
 
-        static IInputArray getContours(Mat binary_image)
+        static IInputArrayOfArrays getContours(Mat binary_image)
         {
-            IInputArray contours = new Vector();
-            CvInvoke.FindContours(binary_image, contours, Emgu.CV.CvEnum.RetrType.External , Emgu.CV.CvEnum.ContoursMatchType.I1);
+            IOutputArrayOfArrays contours = new VectorOfVectorOfPoint();
+            IOutputArrayOfArrays hierarchy = null;
+            CvInvoke.FindContours(binary_image, contours, hierarchy, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxSimple);
 
-            return contours;
+            return (IInputArrayOfArrays)contours;
         }
-        static PointF get_contour_center(Vector<Point> countour)
+        static PointF get_contour_center(IInputArray countour)
         {
             Moments M = CvInvoke.Moments(countour, true);
             float cx = -1;
@@ -127,10 +111,11 @@ namespace EmguCv
 
             return cx_cy;
         }
+        /*
         static void draw_ball_contour(Mat binary_image, Mat rgb_image, IInputArrayOfArrays contours)
         {
             Mat black_image = new Mat(binary_image.Rows, binary_image.Cols, Emgu.CV.CvEnum.DepthType.Cv8U,1);
-            for (int c = 0; c < contours.size(); c++)
+            for (int c = 0; c < contours; c++)
             {
                 float area = CvInvoke.ContourArea(contours[c]);
                 float perimeter = CvInvoke.ArcLength(contours[c], true);
@@ -141,6 +126,24 @@ namespace EmguCv
                 }
             }
             //Vector vector1 = new Vector() <vector<Point>> contours = CvInvoke.ContourArea(binary_image_mask);
+        }
+        */
+        //Main
+        private void btnOpen3_Click(object sender, EventArgs e)
+        {
+            Mat img;
+            img = CvInvoke.Imread("images/tennisball02.jpg");
+            string image_name = "images/tennisball02.jpg";
+            int[] yellowLower = { 30, 150, 100 };
+            int[] yellowUpper = { 60, 255, 255 };
+            Mat rgb_image = read_rgb_image(image_name, true);
+            Mat binary_image_mask = filter_color(rgb_image, yellowLower, yellowUpper);
+            IInputArray contours = getContours(binary_image_mask);
+            //draw_ball_contour(binary_image_mask, read_rgb_image, contours);
+
+            CvInvoke.WaitKey(0);
+            CvInvoke.DestroyAllWindows();
+            
         }
     }
 }
