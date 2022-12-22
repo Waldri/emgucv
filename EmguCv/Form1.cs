@@ -89,11 +89,16 @@ namespace EmguCv
 
         static VectorOfVectorOfPoint getContours(Mat binary_image)
         {
-            IOutputArrayOfArrays contours = new VectorOfVectorOfPoint();
-            IOutputArrayOfArrays hierarchy = null;
-            CvInvoke.FindContours(binary_image, contours, hierarchy, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxSimple);
+            // AQUI HÁ ERRO?
 
-            return (VectorOfVectorOfPoint)contours;
+            VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint(); //**
+            VectorOfVectorOfPoint hierarchy = new VectorOfVectorOfPoint(); //**
+            //Mat Heirarchy = new Mat();
+            CvInvoke.FindContours(binary_image, contours, null, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxSimple);
+
+            System.Diagnostics.Debug.WriteLine("getContours: " + contours.Size.ToString());
+
+            return contours;
         }
         static PointF get_contour_center(VectorOfPoint countour)
         {
@@ -134,7 +139,7 @@ namespace EmguCv
 
                     VectorOfPoint ctn = contours[c];
                     PointF cxcy = get_contour_center(ctn);
-                    CvInvoke.Circle(black_image, Point.Round(cxcy), (int)(radius), new MCvScalar(0, 0, 255), 1, Emgu.CV.CvEnum.LineType.EightConnected);
+                    CvInvoke.Circle(black_image, Point.Round(cxcy), (int)(radius), new MCvScalar(0, 0, 255), 1);
                     CvInvoke.DrawContours(black_image, contours, c, new MCvScalar(150, 250, 150), 1);
 
                 }
